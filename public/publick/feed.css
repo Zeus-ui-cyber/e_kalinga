@@ -1,0 +1,180 @@
+/* =========================
+   FEED GLOBAL RESET
+========================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #eeeee9;
+  color: #1a1a18;
+}
+
+/* =========================
+   LAYOUT WRAPPER
+========================= */
+.page-wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  display: grid;
+  grid-template-columns: 240px 1fr 220px;
+  gap: 20px;
+}
+
+/* =========================
+   SIDEBARS
+========================= */
+.sidebar-left,
+.sidebar-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* =========================
+   FEED CENTER
+========================= */
+.feed-center {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* =========================
+   FILTER BAR
+========================= */
+.filter-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: #fff;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.filter-btn.active {
+  background: #185FA5;
+  color: #fff;
+}
+
+/* =========================
+   COMPOSE CARD
+========================= */
+.compose-card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.compose-trigger {
+  background: #f4f4f3;
+  padding: 10px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* =========================
+   POST CARD
+========================= */
+.post-card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.post-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.post-author {
+  font-weight: 600;
+}
+
+.post-body {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #6b6b66;
+  line-height: 1.5;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.btn {
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #185FA5;
+  color: #fff;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.2);
+}
+
+/* =========================
+   COMMENTS
+========================= */
+.comment-item {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.comment-bubble {
+  background: #f4f4f3;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+/* =========================
+   RIGHT WIDGETS
+========================= */
+.widget-card {
+  background: #fff;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 820px) {
+  .page-wrap {
+    grid-template-columns: 200px 1fr;
+  }
+  .sidebar-right {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-wrap {
+    grid-template-columns: 1fr;
+  }
+  .sidebar-left {
+    display: none;
+  }
+}

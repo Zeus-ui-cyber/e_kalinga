@@ -3,41 +3,126 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Post;
+use Illuminate\Support\Facades\Auth;
 
 class FeedController extends Controller
 {
+    /**
+     * Display feed posts
+     */
     public function index()
     {
-        return view('coming-soon', ['page' => 'Org Feed']);
+        $posts = Post::with('user')
+            ->latest()
+            ->get();
+
+        return view('feed', compact('posts'));
     }
 
-    public function show($post)
+    /**
+     * Show single post
+     */
+    public function show($id)
     {
-        return view('coming-soon', ['page' => 'Org Feed']);
+        $post = Post::with(['user', 'comments.user'])
+            ->findOrFail($id);
+
+        return view('feed.show', compact('post'));
     }
 
+    /**
+     * Show create page (admin only UI if needed)
+     */
     public function create()
     {
-        return view('coming-soon', ['page' => 'Create Post']);
+        return view('feed.create');
     }
 
+    /**
+     * Store new post (MAIN FUNCTION FOR YOUR COMPOSE)
+     */
     public function store(Request $request)
     {
-        return redirect()->route('feed.index');
+        $request->validate([
+            'title'           => 'nullable|string|max:120',
+            'body'            => 'required|string|max:1000',
+            'type'            => 'required|string|in:announcement,event,update',
+            'event_date'      => 'nullable|string|max:255',
+            'event_location'  => 'nullable|string|max:255',
+        ]);
+
+        $post = Post::create([
+            'user_id'        => Auth::id(),
+            'title'          => $request->title,
+            'body'           => $request->body,
+            'type'           => $request->type,
+            'event_date'     => $request->type === 'event' ? $request->event_date : null,
+            'event_location' => $request->type === 'event' ? $request->event_location : null,
+        ]);
+
+        // AJAX response support
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'post' => $post
+            ]);
+        }
+
+        return redirect()->route('feed.index')
+            ->with('success', 'Post created successfully!');
     }
 
-    public function edit($post)
+    /**
+     * Edit post (admin only)
+     */
+    public function edit($id)
     {
-        return view('coming-soon', ['page' => 'Edit Post']);
+        $post = Post::findOrFail($id);
+
+        return view('feed.edit', compact('post'));
     }
 
-    public function update(Request $request, $post)
+    /**
+     * Update post
+     */
+    public function update(Request $request, $id)
     {
-        return redirect()->route('feed.index');
+        $request->validate([
+            'title'           => 'nullable|string|max:120',
+            'body'            => 'required|string|max:1000',
+            'type'            => 'required|string|in:announcement,event,update',
+            'event_date'      => 'nullable|string|max:255',
+            'event_location'  => 'nullable|string|max:255',
+        ]);
+
+        $post = Post::findOrFail($id);
+
+        $post->update([
+            'title'          => $request->title,
+            'body'           => $request->body,
+            'type'           => $request->type,
+            'event_date'     => $request->type === 'event' ? $request->event_date : null,
+            'event_location' => $request->type === 'event' ? $request->event_location : null,
+        ]);
+
+        return redirect()->route('feed.index')
+            ->with('success', 'Post updated successfully!');
     }
 
-    public function destroy($post)
+    /**
+     * Delete post
+     */
+    public function destroy($id)
     {
-        return redirect()->route('feed.index');
+        $post = Post::findOrFail($id);
+        $post->delete();
+
+        if (request()->expectsJson()) {
+            return response()->json(['success' => true]);
+        }
+
+        return redirect()->route('feed.index')
+            ->with('success', 'Post deleted successfully!');
     }
 }

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Student;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -9,18 +10,17 @@ use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
-    // Account Settings page (editable)
-    public function edit()
+    public function show()
     {
         $user = Auth::user();
-        return view('profile.edit', compact('user'));
+        return view('student.profile', compact('user'));
     }
 
     public function update(Request $request)
     {
         $user = Auth::user();
 
-        $request->validate([
+        $validated = $request->validate([
             'name'            => ['required', 'string', 'max:255'],
             'phone'           => ['nullable', 'string', 'max:20'],
             'program_section' => ['nullable', 'string', 'max:100'],
@@ -47,12 +47,12 @@ class ProfileController extends Controller
             }
         }
 
-        $user->name            = $request->name;
-        $user->phone           = $request->phone;
-        $user->program_section = $request->program_section;
-        $user->bio             = $request->bio;
+        $user->name            = $validated['name'];
+        $user->phone           = $validated['phone'] ?? null;
+        $user->program_section = $validated['program_section'] ?? null;
+        $user->bio             = $validated['bio'] ?? null;
         $user->save();
 
-        return back()->with('success', 'Account settings updated successfully!');
+        return back()->with('success', 'Profile updated successfully!');
     }
 }
