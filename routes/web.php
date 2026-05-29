@@ -9,8 +9,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\CommunityController;
 
-
-// ── Missing imports (ADDED ONLY) ──
 use App\Http\Controllers\ReferralController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\ProfileController;
@@ -19,46 +17,98 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Student\ProfileController as StudentProfileController;
 use App\Http\Controllers\Student\SessionController;
 
-// ── Guest-only routes ──
+use App\Http\Controllers\ReactionController;
+use App\Http\Controllers\CommentController;
+
+/*
+|--------------------------------------------------------------------------
+| GUEST ROUTES
+|--------------------------------------------------------------------------
+*/
 Route::middleware('guest')->group(function () {
-    Route::get('/',       [LoginController::class, 'showLogin']);
-    Route::get('/login',  [LoginController::class, 'showLogin'])->name('login');
+
+    Route::get('/', [LoginController::class, 'showLogin']);
+    Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+
     Route::post('/register', [RegisterController::class, 'register'])->name('register');
 
-    Route::get('/verify',         [TwoFactorController::class, 'showForm'])->name('2fa.form');
-    Route::post('/verify',        [TwoFactorController::class, 'verify'])->name('2fa.verify');
+    Route::get('/verify', [TwoFactorController::class, 'showForm'])->name('2fa.form');
+    Route::post('/verify', [TwoFactorController::class, 'verify'])->name('2fa.verify');
     Route::post('/verify/resend', [TwoFactorController::class, 'resend'])->name('2fa.resend');
 });
 
-// ── Authenticated routes ──
+/*
+|--------------------------------------------------------------------------
+| AUTH ROUTES
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth')->group(function () {
 
-    Route::post('/logout',   [LoginController::class, 'logout'])->name('logout');
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-   // Profile Settings (Both roles)
-    Route::get('/profile',   [ProfileController::class, 'edit'])->name('profile.edit');
+    /*
+    |--------------------------------------------------------------------------
+    | PROFILE (GENERAL USER)
+    |--------------------------------------------------------------------------
+    */
+// In routes/web.php
+Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-    // ── Org Feed (view for all users) ──
-    Route::get('/feed',        [FeedController::class, 'index'])->name('feed.index');
-    Route::get('/feed/{post}', [FeedController::class, 'show'])->name('feed.show');
-
-    // ⭐ ADDED (IMPORTANT)
-    // Allow posting via compose form (works with Blade form)
+    /*
+    |--------------------------------------------------------------------------
+    | FEED (ALL USERS VIEW)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/feed', [FeedController::class, 'index'])->name('feed.index');
+    Route::post('/feed', [FeedController::class, 'store'])->name('feed.store');
+    // create post (admin only via middleware check inside controller or blade)
     Route::post('/feed', [FeedController::class, 'store'])->name('feed.store');
 
-    // Messages (1-on-1)
-    Route::get('/messages',            [MessageController::class, 'index'])->name('messages.index');
-    Route::get('/messages/{id}',       [MessageController::class, 'show'])->name('messages.show');
+    /*
+    |--------------------------------------------------------------------------
+    | REACTIONS (LIKE / EMOJI)
+    |--------------------------------------------------------------------------
+    */
+    Route::post('/feed/{post}/react', [ReactionController::class, 'toggle'])
+        ->name('feed.react');
+
+    /*
+    |--------------------------------------------------------------------------
+    | COMMENTS
+    |--------------------------------------------------------------------------
+    */
+    Route::post('/feed/{post}/comment', [CommentController::class, 'store'])
+        ->name('comment.store');
+
+    Route::delete('/comment/{comment}', [CommentController::class, 'destroy'])
+        ->name('comment.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | MESSAGES
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/{id}', [MessageController::class, 'show'])->name('messages.show');
     Route::post('/messages/{id}/send', [MessageController::class, 'send'])->name('messages.send');
 
-    // Community Space
-    Route::get('/community',       [CommunityController::class, 'index'])->name('community.index');
+    /*
+    |--------------------------------------------------------------------------
+    | COMMUNITY
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/community', [CommunityController::class, 'index'])->name('community.index');
     Route::post('/community/send', [CommunityController::class, 'send'])->name('community.send');
 
-    // ── Admin-only ──
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN ROUTES
+    |--------------------------------------------------------------------------
+    */
 Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/referrals', [ReferralController::class, 'index'])->name('referrals.index');
 
@@ -66,19 +116,18 @@ Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function
 
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
-        // Feed management
-        Route::post('/feed', [FeedController::class, 'store'])->name('feed.store');
+        // FEED MANAGEMENT (ADMIN ONLY)
         Route::patch('/feed/{post}', [FeedController::class, 'update'])->name('feed.update');
         Route::delete('/feed/{post}', [FeedController::class, 'destroy'])->name('feed.destroy');
     });
-
-    // ── Student-only ──
-    Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
-
-        Route::get('/profile',  [StudentProfileController::class, 'show'])->name('profile');
-        Route::patch('/profile',[StudentProfileController::class, 'update'])->name('profile.update');
-
-        Route::get('/sessions', [SessionController::class, 'index'])->name('sessions');
-    });
-
+    /*
+    |--------------------------------------------------------------------------
+    | STUDENT ROUTES
+    |--------------------------------------------------------------------------
+    */
+   Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
+    Route::get('/profile',   [\App\Http\Controllers\Student\ProfileController::class, 'show'])->name('profile');
+    Route::patch('/profile', [\App\Http\Controllers\Student\ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/sessions',  [\App\Http\Controllers\Student\SessionController::class, 'index'])->name('sessions');
+});
 });

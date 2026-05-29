@@ -1,4 +1,4 @@
-@extends('dashboard.layout')
+﻿@extends('dashboard.layout')
 
 @section('title', 'My Profile')
 @section('page-title', 'My Profile')

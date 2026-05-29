@@ -911,8 +911,9 @@
 
             <a href="{{ route('profile.edit') }}"
                 class="nav-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
-                <i class="ti ti-settings"></i>
-                Account Settings
+                <i class="ti ti-settings"></i> Account Settings
+            </a>
+            Account Settings
             </a>
 
         </nav>
