@@ -11,33 +11,28 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role',
-        'student_id',
-        'program_section',
+        'name', 'email', 'password',
+        'role', 'student_id', 'program_section',
     ];
 
     protected $hidden = ['password', 'remember_token'];
+    protected $casts  = ['email_verified_at' => 'datetime'];
 
-    protected $casts = ['email_verified_at' => 'datetime'];
+    public function isAdmin(): bool   { return $this->role === 'admin'; }
+    public function isStudent(): bool { return $this->role === 'student'; }
 
-    // ── Role helpers ──
-
-    public function isAdmin(): bool
+    public function sentMessages()
     {
-        return $this->role === 'admin';
+        return $this->hasMany(Message::class, 'sender_id');
     }
 
-    public function isStudent(): bool
+    public function receivedMessages()
     {
-        return $this->role === 'student';
+        return $this->hasMany(Message::class, 'receiver_id');
     }
 
-    // ── Placeholder count (returns 0 until Message module is built) ──
     public function unreadMessagesCount(): int
     {
-        return 0;
+        return $this->receivedMessages()->whereNull('read_at')->count();
     }
 }

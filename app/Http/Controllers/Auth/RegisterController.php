@@ -33,7 +33,6 @@ class RegisterController extends Controller
 
         $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         Cache::put("otp_{$user->id}", $otp, now()->addMinutes(5));
-
         session(['2fa_email' => $user->email, '2fa_user_id' => $user->id]);
 
         Mail::to($user->email)->send(new \App\Mail\OtpMail($otp, $user->name));

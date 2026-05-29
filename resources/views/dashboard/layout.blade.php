@@ -524,12 +524,18 @@
                 @endif
             </a>
 
+            {{-- Community Space — visible to everyone --}}
+            <a href="{{ route('community.index') }}"
+                class="nav-item {{ request()->routeIs('community.*') ? 'active' : '' }}">
+                <i class="ti ti-users"></i> Community Space
+            </a>
+
             {{-- Admin-only nav items --}}
             @if (auth()->user()->isAdmin())
                 <div class="nav-section-label">Admin</div>
                 <a href="{{ route('admin.students.index') }}"
                     class="nav-item {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
-                    <i class="ti ti-users"></i> Student Records
+                    <i class="ti ti-id-badge"></i> Student Records
                 </a>
                 <a href="{{ route('admin.referrals.index') }}"
                     class="nav-item {{ request()->routeIs('admin.referrals.*') ? 'active' : '' }}">
@@ -583,6 +589,10 @@
         <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
 
         <div class="topbar-actions">
+            {{-- Community shortcut --}}
+            <a href="{{ route('community.index') }}" class="topbar-btn" title="Community Space">
+                <i class="ti ti-users"></i>
+            </a>
             <a href="{{ route('messages.index') }}" class="topbar-btn" title="Messages">
                 <i class="ti ti-message-circle"></i>
                 @if (isset($unread) && $unread > 0)
@@ -623,6 +633,7 @@
             document.getElementById('sidebar').classList.add('open');
             document.getElementById('sidebarOverlay').classList.add('open');
         }
+
         function closeSidebar() {
             document.getElementById('sidebar').classList.remove('open');
             document.getElementById('sidebarOverlay').classList.remove('open');
