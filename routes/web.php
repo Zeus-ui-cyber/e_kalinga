@@ -44,7 +44,6 @@ Route::middleware('guest')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -120,6 +119,8 @@ Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function
         Route::patch('/feed/{post}', [FeedController::class, 'update'])->name('feed.update');
         Route::delete('/feed/{post}', [FeedController::class, 'destroy'])->name('feed.destroy');
     });
+   
+
     /*
     |--------------------------------------------------------------------------
     | STUDENT ROUTES
@@ -129,5 +130,7 @@ Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function
     Route::get('/profile',   [\App\Http\Controllers\Student\ProfileController::class, 'show'])->name('profile');
     Route::patch('/profile', [\App\Http\Controllers\Student\ProfileController::class, 'update'])->name('profile.update');
     Route::get('/sessions',  [\App\Http\Controllers\Student\SessionController::class, 'index'])->name('sessions');
+
+    
 });
 });

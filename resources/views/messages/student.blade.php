@@ -254,19 +254,14 @@
                 Your conversation is private and only visible to your peer facilitator.
             </div>
 
+
             @if($admin)
                 <form method="POST" action="{{ route('messages.send', $admin->id) }}" id="chatForm">
-            @else
-                    <form method="POST" action="#" id="chatForm">
-                @endif
                     @csrf
-
-                    {{-- Anonymous toggle --}}
                     <label class="anon-toggle">
                         <input type="checkbox" name="is_anonymous" value="1">
                         Send this message anonymously
                     </label>
-
                     <div class="chat-form">
                         <textarea name="body" class="chat-input" placeholder="Type your message..." rows="1" id="chatInput"
                             required></textarea>
@@ -275,6 +270,11 @@
                         </button>
                     </div>
                 </form>
+            @else
+                <div style="text-align:center; padding:16px; font-size:13px; color:#6b7280;">
+                    No counselor is available yet. Please check back later.
+                </div>
+            @endif
         </div>
 
     </div>

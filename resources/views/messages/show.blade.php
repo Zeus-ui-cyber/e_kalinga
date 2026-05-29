@@ -203,13 +203,15 @@
 
         {{-- Input --}}
         <div class="chat-footer">
-            <form method="POST" action="{{ route('messages.send', $student->id) }}" class="chat-form" id="chatForm">
+            <form method="POST" action="{{ route('messages.send', $student->id) }}" id="chatForm">
                 @csrf
-                <textarea name="body" class="chat-input" placeholder="Type a message..." rows="1" id="chatInput"
-                    required></textarea>
-                <button type="submit" class="chat-send" title="Send">
-                    <i class="ti ti-send"></i>
-                </button>
+                <div class="chat-form">
+                    <textarea name="body" class="chat-input" placeholder="Type your message..." rows="1" id="chatInput"
+                        required></textarea>
+                    <button type="submit" class="chat-send" title="Send">
+                        <i class="ti ti-send"></i>
+                    </button>
+                </div>
             </form>
         </div>
 

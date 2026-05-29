@@ -1,32 +1,25 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-   public function up(): void
-{
-    Schema::create('posts', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-        $table->string('title')->nullable();
-        $table->text('body');
-        $table->string('type')->default('announcement');
-        $table->boolean('pinned')->default(false);
-        $table->timestamps();
-    });
-}
+    public function up(): void
+    {
+        Schema::table('posts', function (Blueprint $table) {
+            if (!Schema::hasColumn('posts', 'event_date')) {
+                $table->string('event_date')->nullable()->after('type');
+            }
+        });
+    }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        Schema::table('posts', function (Blueprint $table) {
+            if (Schema::hasColumn('posts', 'event_date')) {
+                $table->dropColumn('event_date');
+            }
+        });
     }
 };

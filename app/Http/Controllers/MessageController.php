@@ -47,10 +47,6 @@ class MessageController extends Controller
         // Student: only thread is with admin
         $admin = User::where('role', 'admin')->first();
 
-if (!$admin) {
-    return view('messages.student', ['messages' => collect(), 'admin' => null]);
-}
-
         $messages = Message::where(function ($q) use ($user, $admin) {
             $q->where('sender_id', $user->id)->where('receiver_id', $admin?->id);
         })->orWhere(function ($q) use ($user, $admin) {
@@ -70,24 +66,25 @@ if (!$admin) {
      * Admin: open a specific thread with a student.
      */
     public function show($studentId)
-    {
-        $user    = Auth::user();
-        $student = User::where('role', 'student')->findOrFail($studentId);
+{
+    $user    = Auth::user();
+    $student = User::where('role', 'student')->findOrFail($studentId);
 
-        $messages = Message::where(function ($q) use ($user, $student) {
-            $q->where('sender_id', $user->id)->where('receiver_id', $student->id);
-        })->orWhere(function ($q) use ($user, $student) {
-            $q->where('sender_id', $student->id)->where('receiver_id', $user->id);
-        })->orderBy('created_at')->get();
+    $messages = Message::where(function ($q) use ($user, $student) {
+        $q->where('sender_id', $user->id)->where('receiver_id', $student->id);
+    })->orWhere(function ($q) use ($user, $student) {
+        $q->where('sender_id', $student->id)->where('receiver_id', $user->id);
+    })->orderBy('created_at')->get();
 
-        // Mark incoming as read
-        Message::where('sender_id', $student->id)
-            ->where('receiver_id', $user->id)
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
+    Message::where('sender_id', $student->id)
+        ->where('receiver_id', $user->id)
+        ->whereNull('read_at')
+        ->update(['read_at' => now()]);
 
-        return view('messages.show', compact('messages', 'student'));
-    }
+    // Pass $admin so the Blade form action resolves correctly
+    $admin = $student; // from admin's POV, the "other person" is the student
+    return view('messages.show', compact('messages', 'student', 'admin'));
+}
 
     /**
      * Send a message.
