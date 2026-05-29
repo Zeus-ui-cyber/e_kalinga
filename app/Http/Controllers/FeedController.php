@@ -53,27 +53,22 @@ class FeedController extends Controller
 
         $post->load('user');
 
-        /**
-         * AJAX RESPONSE
-         */
         if ($request->ajax()) {
-
             return response()->json([
                 'success' => true,
                 'message' => 'Post created successfully!',
                 'post'    => [
-                    'id'               => $post->id,
-                    'title'            => $post->title,
-                    'body'             => $post->body,
-                    'type'             => $post->type,
-                    'event_date'       => $post->event_date,
-                    'event_location'   => $post->event_location,
-                    'created_at'       => $post->created_at->diffForHumans(),
-
+                    'id'             => $post->id,
+                    'title'          => $post->title,
+                    'body'           => $post->body,
+                    'type'           => $post->type,
+                    'event_date'     => $post->event_date,
+                    'event_location' => $post->event_location,
+                    'created_at'     => $post->created_at->diffForHumans(),
                     'user' => [
-                        'id'        => $post->user->id,
-                        'name'      => $post->user->name,
-                        'initials'  => strtoupper(substr($post->user->name, 0, 2)),
+                        'id'       => $post->user->id,
+                        'name'     => $post->user->name,
+                        'initials' => strtoupper(substr($post->user->name, 0, 2)),
                     ]
                 ]
             ]);
@@ -106,10 +101,6 @@ class FeedController extends Controller
     {
         $post = Post::findOrFail($id);
 
-        /**
-         * OPTIONAL:
-         * restrict editing to owner/admin
-         */
         if (
             Auth::id() !== $post->user_id &&
             Auth::user()->role !== 'admin'
@@ -126,18 +117,15 @@ class FeedController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'title'            => 'nullable|string|max:120',
-            'body'             => 'required|string|max:1000',
-            'type'             => 'required|in:announcement,event,update',
-            'event_date'       => 'nullable|string|max:255',
-            'event_location'   => 'nullable|string|max:255',
+            'title'          => 'nullable|string|max:120',
+            'body'           => 'required|string|max:1000',
+            'type'           => 'required|in:announcement,event,update',
+            'event_date'     => 'nullable|string|max:255',
+            'event_location' => 'nullable|string|max:255',
         ]);
 
         $post = Post::findOrFail($id);
 
-        /**
-         * SECURITY
-         */
         if (
             Auth::id() !== $post->user_id &&
             Auth::user()->role !== 'admin'
@@ -146,22 +134,18 @@ class FeedController extends Controller
         }
 
         $post->update([
-            'title'            => $request->title,
-            'body'             => $request->body,
-            'type'             => $request->type,
-            'event_date'       => $request->type === 'event'
+            'title'          => $request->title,
+            'body'           => $request->body,
+            'type'           => $request->type,
+            'event_date'     => $request->type === 'event'
                                     ? $request->event_date
                                     : null,
-            'event_location'   => $request->type === 'event'
+            'event_location' => $request->type === 'event'
                                     ? $request->event_location
                                     : null,
         ]);
 
-        /**
-         * AJAX
-         */
         if ($request->ajax()) {
-
             return response()->json([
                 'success' => true,
                 'message' => 'Post updated successfully!',
@@ -181,9 +165,6 @@ class FeedController extends Controller
     {
         $post = Post::findOrFail($id);
 
-        /**
-         * SECURITY
-         */
         if (
             Auth::id() !== $post->user_id &&
             Auth::user()->role !== 'admin'
@@ -194,7 +175,6 @@ class FeedController extends Controller
         $post->delete();
 
         if ($request->ajax()) {
-
             return response()->json([
                 'success' => true,
                 'message' => 'Post deleted successfully!'
@@ -213,9 +193,6 @@ class FeedController extends Controller
     {
         $post = Post::findOrFail($id);
 
-        /**
-         * ADMIN ONLY
-         */
         if (Auth::user()->role !== 'admin') {
             abort(403);
         }
@@ -245,16 +222,15 @@ class FeedController extends Controller
             ->where('emoji', $request->emoji)
             ->first();
 
-        /**
-         * TOGGLE REACTION
-         */
         if ($reaction) {
-
             $reaction->delete();
 
             return response()->json([
-                'success' => true,
-                'reacted' => false
+                'success'   => true,
+                'reacted'   => false,
+                'emoji'     => $request->emoji,
+                'count'     => $post->reactions()->where('emoji', $request->emoji)->count(),
+                'animation' => 'shrink',
             ]);
         }
 
@@ -264,8 +240,11 @@ class FeedController extends Controller
         ]);
 
         return response()->json([
-            'success' => true,
-            'reacted' => true
+            'success'   => true,
+            'reacted'   => true,
+            'emoji'     => $request->emoji,
+            'count'     => $post->reactions()->where('emoji', $request->emoji)->count(),
+            'animation' => 'bounce',
         ]);
     }
 
@@ -280,24 +259,34 @@ class FeedController extends Controller
 
         $post = Post::findOrFail($id);
 
-        $comment = $post->comments()->create([
-            'user_id' => Auth::id(),
-            'comment' => $request->comment
-        ]);
+        try {
+            $comment = $post->comments()->create([
+                'user_id' => Auth::id(),
+                'comment' => $request->comment,
+            ]);
 
-        $comment->load('user');
+            $comment->load('user');
 
-        return response()->json([
-            'success' => true,
-            'comment' => [
-                'id'         => $comment->id,
-                'comment'    => $comment->comment,
-                'created_at' => $comment->created_at->diffForHumans(),
-
-                'user' => [
-                    'name' => $comment->user->name,
+            return response()->json([
+                'success' => true,
+                'comment' => [
+                    'id'          => $comment->id,
+                    'comment'     => $comment->comment,
+                    'likes_count' => $comment->likes_count,
+                    'created_at'  => $comment->created_at->diffForHumans(),
+                    'initials'    => strtoupper(substr($comment->user->name, 0, 2)),
+                    'user' => [
+                        'id'   => $comment->user->id,
+                        'name' => $comment->user->name,
+                    ],
                 ]
-            ]
-        ]);
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not post comment: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

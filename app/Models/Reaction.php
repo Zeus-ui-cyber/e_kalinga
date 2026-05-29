@@ -10,80 +10,56 @@ class Reaction extends Model
 {
     use HasFactory;
 
-    /**
-     * Table name
-     */
     protected $table = 'reactions';
 
-    /**
-     * Mass assignable fields
-     */
     protected $fillable = [
         'user_id',
         'post_id',
         'emoji',
     ];
 
-    /**
-     * Type casting
-     */
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
-    /**
-     * Available emoji reactions
-     */
-    public const EMOJIS = [
-        '👍',
-        '❤️',
-        '🎉',
-        '👏',
-        '🔥',
-        '😮',
-        '🤔',
-        '😂',
-    ];
+    public const EMOJIS = ['🔥', '❤️', '🐔', '✨', '🔥'];
 
-    /**
-     * User relationship
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONSHIPS
+    |--------------------------------------------------------------------------
+    */
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Post relationship
-     */
     public function post(): BelongsTo
     {
         return $this->belongsTo(Post::class);
     }
 
-    /**
-     * Check if emoji is valid
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | STATIC HELPERS
+    |--------------------------------------------------------------------------
+    */
+
     public static function isValidEmoji(string $emoji): bool
     {
         return in_array($emoji, self::EMOJIS);
     }
 
-    /**
-     * Get reaction count for specific emoji
-     */
-    public static function getReactionCount($postId, $emoji): int
+    public static function getReactionCount(int $postId, string $emoji): int
     {
         return self::where('post_id', $postId)
             ->where('emoji', $emoji)
             ->count();
     }
 
-    /**
-     * Check if user already reacted
-     */
-    public static function userReacted($postId, $userId, $emoji): bool
+    public static function userReacted(int $postId, int $userId, string $emoji): bool
     {
         return self::where('post_id', $postId)
             ->where('user_id', $userId)
@@ -91,10 +67,13 @@ class Reaction extends Model
             ->exists();
     }
 
-    /**
-     * Toggle reaction
-     */
-    public static function toggleReaction($postId, $userId, $emoji)
+    /*
+    |--------------------------------------------------------------------------
+    | TOGGLE — returns payload for JS animation
+    |--------------------------------------------------------------------------
+    */
+
+    public static function toggleReaction(int $postId, int $userId, string $emoji): array
     {
         $reaction = self::where('post_id', $postId)
             ->where('user_id', $userId)
@@ -105,8 +84,10 @@ class Reaction extends Model
             $reaction->delete();
 
             return [
-                'reacted' => false,
-                'count' => self::getReactionCount($postId, $emoji)
+                'reacted'   => false,
+                'emoji'     => $emoji,
+                'count'     => self::getReactionCount($postId, $emoji),
+                'animation' => 'shrink', // JS hook: trigger shrink animation
             ];
         }
 
@@ -117,8 +98,28 @@ class Reaction extends Model
         ]);
 
         return [
-            'reacted' => true,
-            'count' => self::getReactionCount($postId, $emoji)
+            'reacted'   => true,
+            'emoji'     => $emoji,
+            'count'     => self::getReactionCount($postId, $emoji),
+            'animation' => 'bounce', // JS hook: trigger bounce animation
         ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | GROUPED — for rendering all reactions on a post
+    |--------------------------------------------------------------------------
+    */
+
+    public static function groupedForPost(int $postId, int $userId): array
+    {
+        return collect(self::EMOJIS)->map(function ($emoji) use ($postId, $userId) {
+            return [
+                'emoji'     => $emoji,
+                'count'     => self::getReactionCount($postId, $emoji),
+                'reacted'   => self::userReacted($postId, $userId, $emoji),
+                'animation' => 'idle',
+            ];
+        })->toArray();
     }
 }

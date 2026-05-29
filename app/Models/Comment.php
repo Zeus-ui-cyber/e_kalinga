@@ -10,14 +10,8 @@ class Comment extends Model
 {
     use HasFactory;
 
-    /**
-     * Table name
-     */
     protected $table = 'comments';
 
-    /**
-     * Mass assignable fields
-     */
     protected $fillable = [
         'user_id',
         'post_id',
@@ -25,87 +19,113 @@ class Comment extends Model
         'likes_count',
     ];
 
-    /**
-     * Default values
-     */
     protected $attributes = [
         'likes_count' => 0,
     ];
 
-    /**
-     * Type casting
-     */
     protected $casts = [
         'likes_count' => 'integer',
         'created_at'  => 'datetime',
         'updated_at'  => 'datetime',
     ];
 
-    /**
-     * User relationship
-     */
+    protected $appends = [
+        'time_ago',
+        'short_comment',
+        'initials',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONSHIPS
+    |--------------------------------------------------------------------------
+    */
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Post relationship
-     */
     public function post(): BelongsTo
     {
         return $this->belongsTo(Post::class);
     }
 
-    /**
-     * Get formatted created time
-     */
-    public function getTimeAgoAttribute()
+    /*
+    |--------------------------------------------------------------------------
+    | ACCESSORS — used by JS for animations
+    |--------------------------------------------------------------------------
+    */
+
+    public function getTimeAgoAttribute(): ?string
     {
-        return $this->created_at
-            ? $this->created_at->diffForHumans()
-            : null;
+        return $this->created_at?->diffForHumans();
     }
 
-    /**
-     * Short comment preview
-     */
-    public function getShortCommentAttribute()
+    public function getShortCommentAttribute(): string
     {
         return \Illuminate\Support\Str::limit($this->comment, 50);
     }
 
-    /**
-     * Like comment
-     */
-    public function like()
+    public function getInitialsAttribute(): string
+    {
+        return $this->user
+            ? strtoupper(substr($this->user->name, 0, 2))
+            : '??';
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ACTIONS
+    |--------------------------------------------------------------------------
+    */
+
+    public function like(): void
     {
         $this->increment('likes_count');
     }
 
-    /**
-     * Unlike comment
-     */
-    public function unlike()
+    public function unlike(): void
     {
         if ($this->likes_count > 0) {
             $this->decrement('likes_count');
         }
     }
 
-    /**
-     * Scope latest comments
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | SCOPES
+    |--------------------------------------------------------------------------
+    */
+
     public function scopeLatestComments($query)
     {
         return $query->latest();
     }
 
-    /**
-     * Scope oldest comments
-     */
     public function scopeOldestComments($query)
     {
         return $query->oldest();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | JSON — full payload for AJAX/animation rendering
+    |--------------------------------------------------------------------------
+    */
+
+    public function toAnimationPayload(): array
+    {
+        return [
+            'id'          => $this->id,
+            'comment'     => $this->comment,
+            'likes_count' => $this->likes_count,
+            'time_ago'    => $this->time_ago,
+            'initials'    => $this->initials,
+            'user' => [
+                'id'   => $this->user?->id,
+                'name' => $this->user?->name,
+            ],
+        ];
     }
 }
