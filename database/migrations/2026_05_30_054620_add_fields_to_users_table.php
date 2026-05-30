@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // already included in create_posts_table migration
+        // already included in add_student_fields_to_users_table migration
     }
 
     public function down(): void

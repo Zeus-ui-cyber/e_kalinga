@@ -7,9 +7,8 @@
     <title>eKalinga — @yield('title', 'Dashboard')</title>
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
         rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
     <style>
@@ -38,14 +37,16 @@
             --radius: 18px;
             --radius-sm: 10px;
 
-            --shadow: 0 4px 24px rgba(46, 61, 53, 0.08);
-            --shadow-md: 0 8px 40px rgba(46, 61, 53, 0.12);
+            --shadow: 0 4px 24px rgba(46, 61, 53, .08);
+            --shadow-md: 0 8px 40px rgba(46, 61, 53, .12);
 
-            --sidebar-w: 260px;
-            --topbar-h: 76px;
+            --sidebar-w: 264px;
+            --topbar-h: 72px;
         }
 
-        * {
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -67,16 +68,18 @@
 
         a {
             text-decoration: none;
+            color: inherit;
         }
 
         button,
         input,
-        textarea {
+        textarea,
+        select {
             font-family: inherit;
         }
 
         /* =========================================================
-            SIDEBAR
+           SIDEBAR
         ========================================================= */
 
         .sidebar {
@@ -90,38 +93,47 @@
             top: 0;
             bottom: 0;
             z-index: 100;
-            padding: 0 0 24px;
             transition: transform .3s ease;
-            overflow-y: auto;
+            overflow: hidden;
         }
 
+        /* scrollable nav area only */
+        .sidebar-inner {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow-y: auto;
+            padding-bottom: 24px;
+        }
+
+        /* ── Brand ── */
         .sidebar-brand {
-            padding: 28px 24px 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            padding: 24px 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, .07);
+            flex-shrink: 0;
         }
 
         .brand-pill {
             display: flex;
             align-items: center;
             gap: 12px;
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, .06);
             border-radius: 14px;
-            padding: 12px 16px;
-            width: 100%;
+            padding: 12px 14px;
         }
 
         .brand-icon {
-            width: 42px;
-            height: 42px;
+            width: 40px;
+            height: 40px;
             background: linear-gradient(135deg, var(--sage-light), var(--gold));
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
-            font-size: 18px;
+            font-size: 20px;
             flex-shrink: 0;
-            box-shadow: 0 8px 18px rgba(92, 122, 110, .25);
+            box-shadow: 0 6px 16px rgba(92, 122, 110, .3);
         }
 
         .brand-name {
@@ -134,39 +146,37 @@
         }
 
         .brand-sub {
-            color: rgba(255, 255, 255, 0.45);
+            color: rgba(255, 255, 255, .38);
             font-size: 10px;
             font-weight: 400;
-            letter-spacing: .08em;
+            letter-spacing: .1em;
             text-transform: uppercase;
             margin-top: 2px;
         }
 
-        /* =========================================================
-            USER CARD
-        ========================================================= */
-
+        /* ── User Card ── */
         .sidebar-user {
-            padding: 18px 18px 6px;
+            padding: 16px 16px 4px;
+            flex-shrink: 0;
         }
 
         .user-card {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 14px;
-            background: rgba(255, 255, 255, 0.05);
+            gap: 11px;
+            padding: 11px 13px;
+            background: rgba(255, 255, 255, .05);
             border-radius: 14px;
             transition: .2s;
         }
 
         .user-card:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, .09);
         }
 
         .user-avatar {
-            width: 42px;
-            height: 42px;
+            width: 40px;
+            height: 40px;
             background: linear-gradient(135deg, var(--blush), var(--sage-light));
             border-radius: 50%;
             display: flex;
@@ -181,7 +191,7 @@
         .user-info {
             flex: 1;
             min-width: 0;
-            line-height: 1.3;
+            line-height: 1.35;
         }
 
         .user-name {
@@ -194,7 +204,7 @@
         }
 
         .user-role {
-            color: rgba(255, 255, 255, 0.45);
+            color: rgba(255, 255, 255, .42);
             font-size: 11px;
             text-transform: capitalize;
         }
@@ -204,36 +214,33 @@
             height: 8px;
             background: #4ade80;
             border-radius: 50%;
-            box-shadow: 0 0 10px #4ade80;
+            box-shadow: 0 0 8px #4ade80;
+            flex-shrink: 0;
         }
 
-        /* =========================================================
-            NAVIGATION
-        ========================================================= */
-
+        /* ── Nav ── */
         .nav-section {
             flex: 1;
-            overflow-y: auto;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
 
         .nav-label {
-            padding: 20px 18px 8px;
+            padding: 18px 18px 6px;
             font-size: 10px;
             font-weight: 700;
             letter-spacing: .12em;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.28);
+            color: rgba(255, 255, 255, .26);
         }
 
         .nav-item {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 11px 16px;
-            margin: 2px 12px;
+            padding: 10px 14px;
+            margin: 2px 10px;
             border-radius: 12px;
-            color: rgba(255, 255, 255, 0.58);
+            color: rgba(255, 255, 255, .55);
             font-size: 13.5px;
             font-weight: 500;
             transition: all .2s ease;
@@ -241,13 +248,14 @@
         }
 
         .nav-item i {
-            font-size: 18px;
-            width: 18px;
+            font-size: 19px;
+            width: 20px;
             text-align: center;
+            flex-shrink: 0;
         }
 
         .nav-item:hover {
-            background: rgba(255, 255, 255, 0.07);
+            background: rgba(255, 255, 255, .07);
             color: #fff;
             transform: translateX(2px);
         }
@@ -255,7 +263,7 @@
         .nav-item.active {
             background: linear-gradient(135deg, var(--sage), #3d5c50);
             color: #fff;
-            box-shadow: 0 4px 16px rgba(92, 122, 110, 0.4);
+            box-shadow: 0 4px 14px rgba(92, 122, 110, .4);
         }
 
         .nav-badge {
@@ -264,47 +272,61 @@
             color: #fff;
             font-size: 10px;
             font-weight: 700;
-            padding: 2px 8px;
+            padding: 2px 7px;
             border-radius: 20px;
             min-width: 20px;
             text-align: center;
         }
 
-        /* =========================================================
-            FOOTER
-        ========================================================= */
+        .nav-badge-urgent {
+            margin-left: auto;
+            background: #ef4444;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 20px;
+            min-width: 20px;
+            text-align: center;
+        }
 
+        /* ── Footer ── */
         .sidebar-footer {
             margin-top: auto;
-            padding: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            padding: 14px 16px;
+            border-top: 1px solid rgba(255, 255, 255, .07);
+            flex-shrink: 0;
         }
 
         .logout-btn {
             width: 100%;
             border: none;
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.72);
+            background: rgba(255, 255, 255, .05);
+            color: rgba(255, 255, 255, .65);
             border-radius: 12px;
-            padding: 12px;
+            padding: 11px;
             font-size: 13px;
             font-weight: 500;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 9px;
             cursor: pointer;
             transition: all .2s ease;
         }
 
         .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            background: rgba(239, 68, 68, .15);
+            color: #fca5a5;
             transform: translateY(-1px);
         }
 
+        .logout-btn i {
+            font-size: 17px;
+        }
+
         /* =========================================================
-            MAIN
+           MAIN
         ========================================================= */
 
         .main {
@@ -316,15 +338,16 @@
         }
 
         /* =========================================================
-            TOPBAR
+           TOPBAR
         ========================================================= */
 
         .topbar {
-            background: rgba(245, 240, 232, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(245, 240, 232, .96);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--warm);
             height: var(--topbar-h);
-            padding: 0 30px;
+            padding: 0 28px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -333,16 +356,22 @@
             z-index: 90;
         }
 
-        .topbar-left h1 {
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .topbar-title {
             font-family: 'Playfair Display', serif;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             color: var(--dusk);
             line-height: 1.2;
         }
 
-        .topbar-left p {
-            font-size: 12.5px;
+        .topbar-sub {
+            font-size: 12px;
             color: var(--text-muted);
             margin-top: 2px;
         }
@@ -350,7 +379,7 @@
         .topbar-right {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .topbar-search {
@@ -361,8 +390,8 @@
             border: 1.5px solid var(--warm);
             border-radius: 12px;
             padding: 0 14px;
-            width: 240px;
-            height: 42px;
+            width: 230px;
+            height: 40px;
             color: var(--text-muted);
             transition: .2s;
         }
@@ -370,7 +399,7 @@
         .topbar-search:hover,
         .topbar-search:focus-within {
             border-color: var(--sage-light);
-            box-shadow: 0 0 0 4px rgba(92, 122, 110, 0.08);
+            box-shadow: 0 0 0 4px rgba(92, 122, 110, .08);
         }
 
         .topbar-search input {
@@ -407,7 +436,7 @@
             transform: translateY(-1px);
         }
 
-        .notif-dot {
+        .topbar-notif-dot {
             position: absolute;
             top: 7px;
             right: 7px;
@@ -419,22 +448,22 @@
         }
 
         /* =========================================================
-            PAGE BODY
+           PAGE BODY
         ========================================================= */
 
         .page-body {
             flex: 1;
-            padding: 32px;
+            padding: 30px 32px;
         }
 
         /* =========================================================
-            ALERTS
+           ALERTS
         ========================================================= */
 
         .alert {
-            padding: 14px 18px;
+            padding: 13px 18px;
             border-radius: 14px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             font-size: 13px;
             font-weight: 500;
             display: flex;
@@ -459,8 +488,14 @@
             color: #cc4b4b;
         }
 
+        .alert-info {
+            background: var(--sky-pale);
+            border: 1px solid #93c5fd;
+            color: #1e4f6e;
+        }
+
         /* =========================================================
-            CARDS
+           CARDS
         ========================================================= */
 
         .card {
@@ -491,23 +526,12 @@
             color: var(--dusk);
         }
 
-        .card-action {
-            font-size: 12px;
-            color: var(--sage);
-            font-weight: 600;
-            transition: .2s;
-        }
-
-        .card-action:hover {
-            text-decoration: underline;
-        }
-
         .card-body {
-            padding: 24px;
+            padding: 20px 24px 24px;
         }
 
         /* =========================================================
-            BUTTONS
+           GLOBAL BUTTONS
         ========================================================= */
 
         .btn {
@@ -530,12 +554,13 @@
         .btn-primary {
             background: linear-gradient(135deg, var(--sage), #3d5c50);
             color: #fff;
-            box-shadow: 0 8px 18px rgba(92, 122, 110, .2);
+            box-shadow: 0 6px 16px rgba(92, 122, 110, .2);
         }
 
         .btn-primary:hover {
             transform: translateY(-1px);
             box-shadow: 0 10px 22px rgba(92, 122, 110, .3);
+            color: #fff;
         }
 
         .btn-light {
@@ -558,7 +583,7 @@
         }
 
         /* =========================================================
-            TABLES
+           GLOBAL TABLES
         ========================================================= */
 
         table {
@@ -572,11 +597,11 @@
             font-size: 12px;
             font-weight: 700;
             text-align: left;
-            padding: 14px 18px;
+            padding: 13px 18px;
         }
 
         table tbody td {
-            padding: 16px 18px;
+            padding: 15px 18px;
             font-size: 13px;
             border-top: 1px solid #f2ece3;
             color: var(--text);
@@ -591,7 +616,7 @@
         }
 
         /* =========================================================
-            FORMS
+           GLOBAL FORMS
         ========================================================= */
 
         .form-group {
@@ -600,7 +625,7 @@
 
         .form-label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 7px;
             font-size: 12px;
             font-weight: 600;
             color: var(--dusk);
@@ -611,7 +636,7 @@
             border: 1.5px solid var(--warm);
             background: #fff;
             border-radius: 12px;
-            padding: 12px 14px;
+            padding: 11px 14px;
             font-size: 13px;
             color: var(--text);
             outline: none;
@@ -625,11 +650,11 @@
 
         textarea.form-control {
             resize: vertical;
-            min-height: 120px;
+            min-height: 110px;
         }
 
         /* =========================================================
-            BADGES
+           GLOBAL BADGES
         ========================================================= */
 
         .badge {
@@ -663,13 +688,13 @@
         }
 
         /* =========================================================
-            MOBILE
+           MOBILE OVERLAY + TOGGLE
         ========================================================= */
 
         .sidebar-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.45);
+            background: rgba(0, 0, 0, .45);
             z-index: 95;
             display: none;
         }
@@ -696,16 +721,16 @@
         }
 
         /* =========================================================
-            SCROLLBAR
+           SCROLLBAR
         ========================================================= */
 
         ::-webkit-scrollbar {
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(92, 122, 110, .25);
+            background: rgba(92, 122, 110, .22);
             border-radius: 20px;
         }
 
@@ -714,13 +739,13 @@
         }
 
         /* =========================================================
-            ANIMATION
+           ANIMATION
         ========================================================= */
 
         @keyframes fadeUp {
             from {
                 opacity: 0;
-                transform: translateY(14px);
+                transform: translateY(12px);
             }
 
             to {
@@ -730,11 +755,10 @@
         }
 
         /* =========================================================
-            RESPONSIVE
+           RESPONSIVE
         ========================================================= */
 
         @media (max-width: 900px) {
-
             .sidebar {
                 transform: translateX(-100%);
             }
@@ -763,7 +787,7 @@
                 padding: 20px 16px;
             }
 
-            .topbar-left h1 {
+            .topbar-title {
                 font-size: 18px;
             }
 
@@ -787,151 +811,162 @@
     SIDEBAR
     ========================================================== --}}
     <aside class="sidebar" id="sidebar">
+        <div class="sidebar-inner">
 
-        {{-- Brand --}}
-        <div class="sidebar-brand">
-            <div class="brand-pill">
-                <div class="brand-icon">
-                    <i class="ti ti-leaf"></i>
-                </div>
-
-                <div>
-                    <div class="brand-name">eKalinga</div>
-                    <div class="brand-sub">PLSP Mental Health</div>
-                </div>
-            </div>
-        </div>
-
-        {{-- User --}}
-        <div class="sidebar-user">
-
-            <div class="user-card">
-
-                <div class="user-avatar">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                </div>
-
-                <div class="user-info">
-                    <div class="user-name">
-                        {{ auth()->user()->name }}
+            {{-- Brand --}}
+            <div class="sidebar-brand">
+                <div class="brand-pill">
+                    <div class="brand-icon">
+                        <i class="ti ti-leaf"></i>
                     </div>
-
-                    <div class="user-role">
-                        {{ auth()->user()->role }}
+                    <div>
+                        <div class="brand-name">eKalinga</div>
+                        <div class="brand-sub">PLSP Mental Health</div>
                     </div>
                 </div>
-
-                <div class="online-dot"></div>
-
             </div>
 
-        </div>
+            {{-- User Card --}}
+            <div class="sidebar-user">
+                <a href="{{ route('profile.edit') }}" class="user-card">
+                    <div class="user-avatar">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">{{ auth()->user()->name }}</div>
+                        <div class="user-role">{{ ucfirst(auth()->user()->role) }}</div>
+                    </div>
+                    <div class="online-dot"></div>
+                </a>
+            </div>
 
-        {{-- Navigation --}}
-        <nav class="nav-section">
+            {{-- Navigation --}}
+            <nav class="nav-section">
 
-            <div class="nav-label">Main</div>
+                <div class="nav-label">Main</div>
 
-            <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <i class="ti ti-layout-dashboard"></i>
-                Dashboard
-            </a>
+                <a href="{{ route('dashboard') }}"
+                    class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <i class="ti ti-layout-dashboard"></i>
+                    Dashboard
+                </a>
 
-            <a href="{{ route('feed.index') }}" class="nav-item {{ request()->routeIs('feed.*') ? 'active' : '' }}">
-                <i class="ti ti-news"></i>
-                Org Feed
-            </a>
+                <a href="{{ route('feed.index') }}" class="nav-item {{ request()->routeIs('feed.*') ? 'active' : '' }}">
+                    <i class="ti ti-news"></i>
+                    Org Feed
+                </a>
 
-            <a href="{{ route('messages.index') }}"
-                class="nav-item {{ request()->routeIs('messages.*') ? 'active' : '' }}">
+                <a href="{{ route('messages.index') }}"
+                    class="nav-item {{ request()->routeIs('messages.*') ? 'active' : '' }}">
+                    <i class="ti ti-message-circle"></i>
+                    Messages
+                    @php $unread = auth()->user()->unreadMessagesCount() ?? 0; @endphp
+                    @if ($unread > 0)
+                        <span class="nav-badge">{{ $unread }}</span>
+                    @endif
+                </a>
 
-                <i class="ti ti-message-circle"></i>
-                Messages
+                <a href="{{ route('community.index') }}"
+                    class="nav-item {{ request()->routeIs('community.*') ? 'active' : '' }}">
+                    <i class="ti ti-users-group"></i>
+                    Community Space
+                </a>
 
-                @php
-                    $unread = auth()->user()->unreadMessagesCount() ?? 0;
-                @endphp
+                {{-- ── ADMIN ── --}}
+                @if (auth()->user()->isAdmin())
 
-                @if ($unread > 0)
-                    <span class="nav-badge">{{ $unread }}</span>
+                    <div class="nav-label">Appointments</div>
+
+                    <a href="{{ route('admin.appointments.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.appointments.*') ? 'active' : '' }}">
+                        <i class="ti ti-calendar-check"></i>
+                        Manage Appointments
+                        @php
+                            $pendingCount = \App\Models\Appointment::where('status', 'pending')->count();
+                        @endphp
+                        @if ($pendingCount > 0)
+                            <span class="nav-badge-urgent">{{ $pendingCount }}</span>
+                        @endif
+                    </a>
+
+                    <div class="nav-label">Admin</div>
+
+                    <a href="{{ route('admin.students.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
+                        <i class="ti ti-id-badge"></i>
+                        Student Records
+                    </a>
+
+                    <a href="{{ route('admin.referrals.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.referrals.*') ? 'active' : '' }}">
+                        <i class="ti ti-transfer"></i>
+                        Referrals
+                    </a>
+
+                    <a href="{{ route('admin.reports.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+                        <i class="ti ti-chart-bar"></i>
+                        Reports & Analytics
+                    </a>
+
                 @endif
-            </a>
 
-            <a href="{{ route('community.index') }}"
-                class="nav-item {{ request()->routeIs('community.*') ? 'active' : '' }}">
-                <i class="ti ti-users"></i>
-                Community Space
-            </a>
+                {{-- ── STUDENT ── --}}
+                @if (auth()->user()->isStudent())
 
-            {{-- Admin --}}
-            @if (auth()->user()->isAdmin())
+                    <div class="nav-label">Appointments</div>
 
-                <div class="nav-label">Admin</div>
+                    <a href="{{ route('appointments.create') }}"
+                        class="nav-item {{ request()->routeIs('appointments.create') ? 'active' : '' }}"
+                        style="background:rgba(92,122,110,.12);color:rgba(255,255,255,.85);">
+                        <i class="ti ti-calendar-plus"></i>
+                        Request Appointment
+                    </a>
 
-                <a href="{{ route('admin.students.index') }}"
-                    class="nav-item {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
-                    <i class="ti ti-id-badge"></i>
-                    Student Records
+                    <a href="{{ route('appointments.index') }}"
+                        class="nav-item {{ request()->routeIs('appointments.index') || request()->routeIs('appointments.show') ? 'active' : '' }}">
+                        <i class="ti ti-calendar-check"></i>
+                        My Appointments
+                    </a>
+
+                    <div class="nav-label">My Records</div>
+
+                    <a href="{{ route('student.profile') }}"
+                        class="nav-item {{ request()->routeIs('student.profile') ? 'active' : '' }}">
+                        <i class="ti ti-user-circle"></i>
+                        My Profile
+                    </a>
+
+                    <a href="{{ route('student.sessions') }}"
+                        class="nav-item {{ request()->routeIs('student.sessions') ? 'active' : '' }}">
+                        <i class="ti ti-file-text"></i>
+                        Session History
+                    </a>
+
+                @endif
+
+                <div class="nav-label">Settings</div>
+
+                <a href="{{ route('profile.edit') }}"
+                    class="nav-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
+                    <i class="ti ti-settings"></i>
+                    Account Settings
                 </a>
 
-                <a href="{{ route('admin.referrals.index') }}"
-                    class="nav-item {{ request()->routeIs('admin.referrals.*') ? 'active' : '' }}">
-                    <i class="ti ti-transfer"></i>
-                    Referrals
-                </a>
+            </nav>
 
-                <a href="{{ route('admin.reports.index') }}"
-                    class="nav-item {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
-                    <i class="ti ti-chart-bar"></i>
-                    Reports & Analytics
-                </a>
-
-            @endif
-
-            {{-- Student --}}
-            @if (auth()->user()->isStudent())
-
-                <div class="nav-label">My Records</div>
-
-                <a href="{{ route('student.profile') }}"
-                    class="nav-item {{ request()->routeIs('student.profile') ? 'active' : '' }}">
-                    <i class="ti ti-user-circle"></i>
-                    My Profile
-                </a>
-
-                <a href="{{ route('student.sessions') }}"
-                    class="nav-item {{ request()->routeIs('student.sessions') ? 'active' : '' }}">
-                    <i class="ti ti-file-text"></i>
-                    Session History
-                </a>
-
-            @endif
-
-            <div class="nav-label">Settings</div>
-
-            <a href="{{ route('profile.edit') }}"
-                class="nav-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
-                <i class="ti ti-settings"></i> Account Settings
-            </a>
-            Account Settings
-            </a>
-
-        </nav>
-
-        {{-- Footer --}}
-        <div class="sidebar-footer">
-
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-
-                <button type="submit" class="logout-btn">
-                    <i class="ti ti-logout"></i>
-                    Sign out
-                </button>
-            </form>
+            {{-- Footer --}}
+            <div class="sidebar-footer">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="logout-btn">
+                        <i class="ti ti-logout"></i>
+                        Sign out
+                    </button>
+                </form>
+            </div>
 
         </div>
-
     </aside>
 
     {{-- =========================================================
@@ -942,24 +977,17 @@
         {{-- TOPBAR --}}
         <header class="topbar">
 
-            <div style="display:flex;align-items:center;gap:14px;">
+            <div class="topbar-left">
 
                 <button class="mobile-toggle" onclick="openSidebar()">
                     <i class="ti ti-menu-2"></i>
                 </button>
 
-                <div class="topbar-left">
-
-                    <h1>
-                        @yield('page-title', 'Dashboard')
-                    </h1>
-
-                    <p>
-                        {{ now()->format('l, F d, Y') }}
-                        ·
-                        PLSP Center for Mental Health
-                    </p>
-
+                <div>
+                    <div class="topbar-title">@yield('page-title', 'Dashboard')</div>
+                    <div class="topbar-sub">
+                        {{ now()->format('l, F d, Y') }} · PLSP Center for Mental Health
+                    </div>
                 </div>
 
             </div>
@@ -968,21 +996,28 @@
 
                 <div class="topbar-search">
                     <i class="ti ti-search"></i>
-                    <input type="text" placeholder="Search records...">
+                    <input type="text" placeholder="Search records…">
                 </div>
 
-                <a href="{{ route('community.index') }}" class="topbar-btn" title="Community Space">
-                    <i class="ti ti-users"></i>
-                </a>
+                {{-- Appointments shortcut --}}
+                @if (auth()->user()->isStudent())
+                    <a href="{{ route('appointments.index') }}" class="topbar-btn" title="My Appointments">
+                        <i class="ti ti-calendar-check"></i>
+                    </a>
+                @else
+                    <a href="{{ route('admin.appointments.index') }}" class="topbar-btn" title="Manage Appointments">
+                        <i class="ti ti-calendar-check"></i>
+                        @if (($pendingCount ?? 0) > 0)
+                            <span class="topbar-notif-dot"></span>
+                        @endif
+                    </a>
+                @endif
 
                 <a href="{{ route('messages.index') }}" class="topbar-btn" title="Messages">
-
                     <i class="ti ti-message-circle"></i>
-
-                    @if (isset($unread) && $unread > 0)
-                        <span class="notif-dot"></span>
+                    @if (($unread ?? 0) > 0)
+                        <span class="topbar-notif-dot"></span>
                     @endif
-
                 </a>
 
                 <a href="{{ route('profile.edit') }}" class="topbar-btn" title="Profile">
@@ -996,7 +1031,6 @@
         {{-- PAGE BODY --}}
         <div class="page-body">
 
-            {{-- SUCCESS --}}
             @if (session('success'))
                 <div class="alert alert-success">
                     <i class="ti ti-circle-check"></i>
@@ -1004,7 +1038,6 @@
                 </div>
             @endif
 
-            {{-- ERROR --}}
             @if (session('error'))
                 <div class="alert alert-error">
                     <i class="ti ti-alert-circle"></i>
@@ -1012,7 +1045,13 @@
                 </div>
             @endif
 
-            {{-- CONTENT --}}
+            @if (session('info'))
+                <div class="alert alert-info">
+                    <i class="ti ti-info-circle"></i>
+                    {{ session('info') }}
+                </div>
+            @endif
+
             @yield('content')
 
         </div>
@@ -1029,6 +1068,11 @@
             document.getElementById('sidebar').classList.remove('open');
             document.getElementById('sidebarOverlay').classList.remove('open');
         }
+
+        // Close sidebar on ESC
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeSidebar();
+        });
     </script>
 
     @yield('scripts')

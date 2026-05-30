@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;    
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
@@ -22,10 +21,13 @@ class DashboardController extends Controller
     private function adminDashboard()
     {
         $stats = [
-            'total_students'  => User::where('role', 'student')->count(),
-            'active_cases'    => 0,
-            'referrals'       => 0,
-            'unread_messages' => Auth::user()->unreadMessagesCount(),
+            'total_students'       => User::where('role', 'student')->count(),
+            'active_cases'         => 0,
+            'pending_appointments' => 0,
+            'unread_messages'      => Auth::user()->unreadMessagesCount(),
+            'urgent_appointments'  => 0,
+            'scheduled_today'      => 0,
+            'total_appointments'   => 0,
         ];
 
         $recentStudents = User::where('role', 'student')
@@ -40,19 +42,37 @@ class DashboardController extends Controller
             ['label' => 'Other',           'pct' => 8],
         ];
 
-        return view('dashboard.index', compact('stats', 'recentStudents', 'trends'));
+        $pendingAppointments = collect();
+        $upcomingInterviews  = collect();
+        $adminNotifications  = collect();
+
+        return view('dashboard.index', compact(
+            'stats', 'recentStudents', 'trends',
+            'pendingAppointments', 'upcomingInterviews',
+            'adminNotifications'
+        ));
     }
 
     private function studentDashboard(User $user)
     {
         $stats = [
-            'sessions'      => 0,
-            'messages_sent' => 0,
+            'sessions'            => 0,
+            'messages_sent'       => 0,
+            'total_appointments'  => 0,
+            'pending_appointments'=> 0,
+            'active_appointments' => 0,
         ];
 
-        $nextAppointment = null;
-        $feedPosts = collect();
+        $feedPosts           = collect();
+        $nextAppointment     = null;
+        $latestAppointment   = null;
+        $appointmentHistory  = collect();
+        $myNotifications     = collect();
 
-        return view('dashboard.index', compact('stats', 'nextAppointment', 'feedPosts'));
+        return view('dashboard.index', compact(
+            'stats', 'feedPosts', 'nextAppointment',
+            'latestAppointment', 'appointmentHistory',
+            'myNotifications'
+        ));
     }
 }
