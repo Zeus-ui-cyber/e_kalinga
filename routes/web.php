@@ -18,6 +18,7 @@ use App\Http\Controllers\Student\SessionController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\CommentController;
 
+
 // ── NEW: Appointment Controllers ──
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
@@ -188,4 +189,21 @@ Route::post('/appointments/{appointment}/schedule', [\App\Http\Controllers\Admin
         Route::get('/sessions', [SessionController::class, 'index'])->name('sessions');
     });
 
+});
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/force-migrate', function () {
+    try {
+        // Runs database migrations
+        Artisan::call('migrate', ['--force' => true]);
+        
+        // Optional: Runs your AdminSeeder if you have your updateOrCreate fix ready
+        if (class_exists(\Database\Seeders\AdminSeeder::class)) {
+            Artisan::call('db:seed', ['--class' => 'AdminSeeder', '--force' => true]);
+        }
+        
+        return 'Database tables successfully migrated and seeded!';
+    } catch (\Exception $e) {
+        return 'Migration Error: ' . $e->getMessage();
+    }
 });
