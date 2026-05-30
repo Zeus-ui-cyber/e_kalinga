@@ -1150,9 +1150,9 @@
 
         <!-- ORG TOP BANNER -->
         <div class="org-topbar">
-            <div class="org-topbar-icon">CS</div>
+            <div class="org-topbar-icon">EK</div>
             <div class="org-topbar-info">
-                <div class="org-topbar-name">Computer Society</div>
+                <div class="org-topbar-name">E-KALINGA</div>
                 <div class="org-topbar-sub">University Student Organization</div>
             </div>
             <div class="org-topbar-stats">
@@ -1513,13 +1513,13 @@
                 const div = document.createElement('div');
                 div.className = 'comment-item';
                 div.innerHTML = `
-                <div class="comment-av">${initials}</div>
-                <div class="comment-bubble">
-                    <div class="comment-author">${escHtml(data.comment.user.name)}</div>
-                    <div class="comment-text">${escHtml(data.comment.comment)}</div>
-                    <div class="comment-time">${escHtml(data.comment.created_at)}</div>
-                </div>
-            `;
+                    <div class="comment-av">${initials}</div>
+                    <div class="comment-bubble">
+                        <div class="comment-author">${escHtml(data.comment.user.name)}</div>
+                        <div class="comment-text">${escHtml(data.comment.comment)}</div>
+                        <div class="comment-time">${escHtml(data.comment.created_at)}</div>
+                    </div>
+                `;
                 list.appendChild(div);
 
                 // Update comment count badge

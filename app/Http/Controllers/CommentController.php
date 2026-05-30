@@ -13,19 +13,29 @@ class CommentController extends Controller
      * Store a new comment
      */
     public function store(Request $request, Post $post)
-    {
-        $request->validate([
-            'comment' => 'required|string|max:1000',
-        ]);
+{
+    $request->validate([
+        'comment' => 'required|string|max:1000',
+    ]);
 
-        Comment::create([
-            'user_id' => Auth::id(),
-            'post_id' => $post->id,
-            'comment' => $request->comment,
-        ]);
+    $comment = Comment::create([
+        'user_id' => Auth::id(),
+        'post_id' => $post->id,
+        'comment' => $request->comment,
+    ]);
 
-        return back()->with('success', 'Comment added successfully.');
+    // SMART CHECK: If the frontend expects JSON, give it JSON
+    if ($request->wantsJson() || $request->ajax()) {
+        return response()->json([
+            'success' => true,
+            'message' => 'Comment added successfully.',
+            'comment' => $comment->toAnimationPayload()
+        ]);
     }
+
+    // Fallback for standard page-reload form submissions
+    return back()->with('success', 'Comment added successfully.');
+}
 
     /**
      * Delete a comment
