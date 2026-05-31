@@ -1,29 +1,25 @@
 <?php
+// ═══════════════════════════════════════════════════
+//  app/Mail/OtpMail.php
+// ═══════════════════════════════════════════════════
 
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue; // 1. IMPORT THIS CONTRACT
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class OtpMail extends Mailable implements ShouldQueue // 2. IMPLEMENT THE INTERFACE
+class OtpMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
     public function __construct(
         public string $otp,
         public string $userName
     ) {}
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
@@ -31,9 +27,6 @@ class OtpMail extends Mailable implements ShouldQueue // 2. IMPLEMENT THE INTERF
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
         return new Content(
@@ -45,3 +38,40 @@ class OtpMail extends Mailable implements ShouldQueue // 2. IMPLEMENT THE INTERF
         );
     }
 }
+
+
+/*
+─────────────────────────────────────────────────
+  resources/views/emails/otp.blade.php
+  (Laravel Markdown Mail template)
+─────────────────────────────────────────────────
+  Save the block below as a SEPARATE file:
+  resources/views/emails/otp.blade.php
+
+  Content:
+
+@component('mail::message')
+
+# Hi, {{ $userName }}!
+
+Your **eKalinga** verification code is:
+
+@component('mail::panel')
+<div style="font-size: 36px; font-weight: 700; letter-spacing: 12px; text-align: center; color: #0f5c42;">
+{{ $otp }}
+</div>
+@endcomponent
+
+This code expires in **5 minutes**. Do not share it with anyone.
+
+If you did not attempt to sign in to eKalinga, please ignore this email.
+
+---
+
+*PLSP Center for Mental Health*
+*eKalinga Digital Mental Health Record System*
+
+@endcomponent
+
+─────────────────────────────────────────────────
+*/
